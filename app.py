@@ -36,6 +36,9 @@ def menu():
 # search books
 # data cleaning
 
+
+
+
 def clean_date(date_str):
     months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October',
               'November', 'December']
@@ -72,6 +75,29 @@ def clean_price(price_str):
     else:
         return int(price_float * 100)
 
+
+def clean_id(id_str, options):
+    try:
+        book_id = int(id_str)
+    except ValueError:
+        input("""
+               \n***** ID ERROR *****
+               \r The ID should be a number number.
+               \rPress enter to try again.
+               \r ************************
+        """)
+        return
+    else:
+        if book_id in options:
+            return book_id
+        else:
+            input(f"""
+                          \n***** ID ERROR *****
+                          \rOptions:{options}
+                          \rPress enter to try again.
+                          \r ************************
+                   """)
+            return
 
 
 
@@ -124,7 +150,25 @@ def app():
             input('\nPress enter to return to the main menu')
         elif choice == '3':
             # search book
-            pass
+            id_options = []
+            for book in session.query(Book):
+                id_options.append(book.id)
+            id_error = True
+            while id_error:
+                id_choice = input(f"""
+                      \nId Options: {id_options}
+                      \rBood id: """)
+                id_choice = clean_id(id_choice,id_options)
+                if type(id_choice) == int:
+                    id_error = False
+            the_book = session.query(Book).filter(Book.id == id_choice).first()
+            print(f"""
+                    \n{the_book.title} by {the_book.author}
+                    \rPublished {the_book.published_date}
+                    \rPrice: ${the_book.price / 100}
+                    
+                    """)
+            input("\nPress enter to return to the main menu")
         elif choice  == '4':
             # analysis
             pass
